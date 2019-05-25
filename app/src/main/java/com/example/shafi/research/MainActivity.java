@@ -2,7 +2,9 @@ package com.example.shafi.research;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ExpandableListView;
+import android.widget.Toast;
 
 import com.example.shafi.research.Adapter.CustomAdapter;
 
@@ -16,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
     ExpandableListView expandableListView;
     List<String> listDataHeader;
     HashMap<String, List<String>> listDataChild;
+    private  int lastCollapse  = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +35,47 @@ public class MainActivity extends AppCompatActivity {
         expandableListView = findViewById(R.id.idEX);
         customAdapter = new CustomAdapter(this, listDataHeader, listDataChild);
         expandableListView.setAdapter(customAdapter);
+
+        expandableListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
+            @Override
+            public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
+
+                String grpName = listDataHeader.get(groupPosition);
+                Toast.makeText(getApplicationContext(), grpName, Toast.LENGTH_SHORT).show();
+
+                return false;
+            }
+        });
+
+        expandableListView.setOnGroupCollapseListener(new ExpandableListView.OnGroupCollapseListener() {
+            @Override
+            public void onGroupCollapse(int groupPosition) {
+                String grpName = listDataHeader.get(groupPosition);
+                Toast.makeText(getApplicationContext(), grpName  +"  is collapsed", Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+        expandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+            @Override
+            public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+
+                String childString = listDataChild.get(listDataHeader.get(groupPosition)).get(childPosition);
+                Toast.makeText(getApplicationContext(), childString, Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        });
+
+        expandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
+            @Override
+            public void onGroupExpand(int groupPosition) {
+                if(lastCollapse != -1 && lastCollapse != groupPosition){
+
+                    expandableListView.collapseGroup(lastCollapse);
+                }
+                lastCollapse = groupPosition;
+            }
+        });
 
 
     }
